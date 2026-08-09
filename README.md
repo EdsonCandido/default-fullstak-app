@@ -1,130 +1,120 @@
 # default-full-app
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, Express, TRPC, and more.
+Starter kit SaaS full-stack criado com [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack): React, TanStack Router, Express, tRPC, Drizzle, PostgreSQL e Better Auth.
 
-## Features
+## Stack
 
-- **TypeScript** - For type safety and improved developer experience
-- **TanStack Router** - File-based routing with full type safety
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
-- **Express** - Fast, unopinionated web framework
-- **tRPC** - End-to-end type-safe APIs
-- **Node.js** - Runtime environment
-- **Drizzle** - TypeScript-first ORM
-- **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
-- **Turborepo** - Optimized monorepo build system
+- **TypeScript** — tipagem strict
+- **TanStack Router** — file-based routing
+- **TailwindCSS** + **shadcn/ui** (`packages/ui`)
+- **Express** + **tRPC**
+- **Drizzle ORM** + **PostgreSQL**
+- **Better Auth** — email/senha
+- **Turborepo** — monorepo
 
 ## Getting Started
 
-All configuration lives in a single root `.env` file. Apps, Drizzle, and Docker Compose load from it.
-
-1. Copy the example env and install dependencies:
+Toda configuração fica no `.env` da raiz.
 
 ```bash
 cp .env.example .env
 npm install
-```
-
-2. Start PostgreSQL, apply the schema, and run the full stack:
-
-```bash
 npm run db:start
-npm run db:push
-npm run start:all
+npm run db:push      # schema (dev) — em prod use db:migrate
+npm run db:seed      # cria admin padrão
+npm run start:all    # Postgres + web + server
 ```
 
-`start:all` starts Postgres (if needed) and runs `npm run dev` for web + server.
+- Web: [http://localhost:3001](http://localhost:3001)
+- API: [http://localhost:3000](http://localhost:3000)
 
-Open [http://localhost:3001](http://localhost:3001) for the web app.  
-API: [http://localhost:3000](http://localhost:3000).
+### Usuário administrador (seed)
+
+| Campo | Valor |
+|---|---|
+| Nome | Administrador |
+| E-mail | `admin@admin.com` |
+| Senha | `1234567890` |
+
+A senha é hasheada pelo Better Auth (nunca em texto puro no banco).
 
 ### Environment variables
 
 | Variable | Default | Description |
 |---|---|---|
-| `WEB_PORT` | `3001` | Host port for the web app (dev server / Compose publish) |
-| `SERVER_PORT` | `3000` | Port for the API server in local dev (Compose maps this host port to container `3000`) |
-| `POSTGRES_PORT` | `5432` | Host port for PostgreSQL |
-| `POSTGRES_PASSWORD` | `password` | PostgreSQL password |
-| `DATABASE_URL` | `postgresql://postgres:password@localhost:5432/default-full-app` | DB connection string (local host) |
-| `BETTER_AUTH_SECRET` | (placeholder) | Auth secret (≥ 32 chars) |
-| `BETTER_AUTH_URL` | `http://localhost:3000` | Better Auth base URL |
-| `CORS_ORIGIN` | `http://localhost:3001` | Allowed CORS origin (web URL) |
-| `VITE_SERVER_URL` | `http://localhost:3000` | Server URL used by the web client |
+| `WEB_PORT` | `3001` | Porta do front |
+| `SERVER_PORT` | `3000` | Porta da API |
+| `POSTGRES_PORT` | `5432` | Porta do Postgres |
+| `POSTGRES_PASSWORD` | `password` | Senha do Postgres |
+| `DATABASE_URL` | `postgresql://postgres:password@localhost:5432/default-full-app` | Connection string |
+| `BETTER_AUTH_SECRET` | (placeholder) | Secret ≥ 32 chars |
+| `BETTER_AUTH_URL` | `http://localhost:3000` | Base URL do Better Auth |
+| `CORS_ORIGIN` | `http://localhost:3001` | Origin CORS do web |
+| `VITE_SERVER_URL` | `http://localhost:3000` | URL da API no client |
 
-If you change ports, also update `DATABASE_URL`, `BETTER_AUTH_URL`, `CORS_ORIGIN`, and `VITE_SERVER_URL` so they stay in sync.
+Se mudar portas, sincronize `DATABASE_URL`, `BETTER_AUTH_URL`, `CORS_ORIGIN` e `VITE_SERVER_URL`.
 
-## UI Customization
+## Recursos do starter
 
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
+- Login (bloco **login-01** shadcn) com e-mail/senha, lembre-me, loading e erros
+- Layout admin (**dashboard-01**): sidebar colapsável, navbar, breadcrumb
+- Rotas protegidas: `/dashboard`, `/users`, `/settings`, `/profile`
+- Dark/Light/System (persistido)
+- Dashboard com métricas e últimos acessos (dados reais)
+- Perfil editável (nome, cargo)
+- Domínio via tRPC; sessão via Better Auth (`/api/auth/*`)
 
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
+## UI
 
-### Add more shared components
-
-Run this from the project root to add more primitives to the shared UI package:
+Primitives shadcn em `packages/ui`:
 
 ```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
+npx shadcn@latest add accordion dialog popover sheet -c packages/ui
 ```
 
-Import shared components like this:
+Import:
 
 ```tsx
 import { Button } from "@default-full-app/ui/components/button";
 ```
 
-### Add app-specific blocks
+Tokens globais: `packages/ui/src/styles/globals.css`.
 
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
-
-## Deployment
-
-### Docker Compose
-
-- Target: web + server + postgres
-- Config: `docker-compose.yml` (app Dockerfiles live in `apps/*/Dockerfile`)
-- Build images: `npm run docker:build`
-- Start full stack: `npm run docker:up`
-- Logs: `npm run docker:logs`
-- Stop: `npm run docker:down`
-
-Environment variables are read from the root `.env`. Host ports use `WEB_PORT`, `SERVER_PORT`, and `POSTGRES_PORT`. Inside the Compose network, services still use container ports `80` (web), `3000` (server), and `5432` (postgres).
-
-For more details, see the guide on [Deploying with Docker Compose](https://www.better-t-stack.dev/docs/guides/docker).
-
-## Project Structure
+## Structure
 
 ```
-default-full-app/
-├── apps/
-│   ├── web/         # Frontend application (React + TanStack Router)
-│   └── server/      # Backend API (Express, TRPC)
-├── packages/
-│   ├── ui/          # Shared shadcn/ui components and styles
-│   ├── api/         # API layer / business logic
-│   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
+apps/
+  web/          # React + TanStack Router
+  server/       # Express + tRPC + Better Auth handler
+packages/
+  ui/           # shadcn/ui shared
+  api/          # routers tRPC
+  auth/         # Better Auth + seed
+  db/           # Drizzle schema + migrations
+  env/          # env validado (zod)
 ```
 
-## Available Scripts
+## Scripts
 
-- `npm run start:all`: Start Postgres and all apps in development mode
-- `npm run dev`: Start all applications in development mode
-- `npm run build`: Build all applications
-- `npm run dev:web`: Start only the web application
-- `npm run dev:server`: Start only the server
-- `npm run check-types`: Check TypeScript types across all apps
-- `npm run db:push`: Push schema changes to database
-- `npm run db:generate`: Generate database client/types
-- `npm run db:migrate`: Run database migrations
-- `npm run db:studio`: Open database studio UI
-- `npm run db:start`: Start only the Postgres container
-- `npm run docker:build`: Build the Docker Compose images
-- `npm run docker:up`: Build and start the Docker Compose stack
-- `npm run docker:logs`: Tail logs from the Docker Compose stack
-- `npm run docker:down`: Stop the Docker Compose stack
+| Script | Descrição |
+|---|---|
+| `npm run start:all` | Postgres + dev web/server |
+| `npm run dev` | Dev de todos os apps |
+| `npm run build` | Build monorepo |
+| `npm run check-types` | Typecheck |
+| `npm run db:start` | Sobe Postgres |
+| `npm run db:push` | Push schema (dev) |
+| `npm run db:generate` | Gera migrations |
+| `npm run db:migrate` | Aplica migrations |
+| `npm run db:seed` | Seed do admin |
+| `npm run db:studio` | Drizzle Studio |
+| `npm run docker:up` | Stack Docker completa |
+
+## Docker
+
+```bash
+npm run docker:build
+npm run docker:up
+```
+
+Variáveis lidas do `.env` da raiz. Ver [Deploying with Docker Compose](https://www.better-t-stack.dev/docs/guides/docker).

@@ -9,16 +9,20 @@
       "default": "./src/*.ts"
     }
   },
-  "scripts": {},
+  "scripts": {
+    "db:seed": "node --import tsx src/seed.ts"
+  },
   "dependencies": {
     "@default-full-app/db": "*",
     "@default-full-app/env": "*",
     "better-auth": "1.6.25",
     "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@default-full-app/config": "*",
+    "tsx": "^4.23.11",
     "typescript": "^6.0.3"
   }
 }
