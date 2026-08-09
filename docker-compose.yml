@@ -6,12 +6,12 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
       args:
-        VITE_SERVER_URL: http://localhost:3000
+        VITE_SERVER_URL: ${VITE_SERVER_URL:-http://localhost:3000}
     init: true
     ports:
-      - "3001:80"
+      - "${WEB_PORT:-3001}:80"
     env_file:
-      - path: apps/web/.env
+      - path: .env
         required: false
     depends_on:
       server:
@@ -30,13 +30,14 @@ services:
       dockerfile: apps/server/Dockerfile
     init: true
     ports:
-      - "3000:3000"
+      - "${SERVER_PORT:-3000}:3000"
     env_file:
-      - path: apps/server/.env
+      - path: .env
         required: false
     environment:
-      CORS_ORIGIN: http://localhost:3001
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3001}
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-password}@postgres:5432/default-full-app
+      SERVER_PORT: "3000"
     healthcheck:
       test:
         [
@@ -55,14 +56,14 @@ services:
     restart: unless-stopped
 
   postgres:
-    image: postgres:18
+    image: postgres:18-alpine
     container_name: default-full-app-postgres
     environment:
       POSTGRES_DB: default-full-app
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - default-full-app_postgres_data:/var/lib/postgresql
     healthcheck:
@@ -74,3 +75,7 @@ services:
 
 volumes:
   default-full-app_postgres_data:
+
+networks:
+  proxy:
+    external: true

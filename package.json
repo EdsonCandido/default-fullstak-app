@@ -12,6 +12,7 @@
     "check-types": "turbo run check-types",
     "dev:web": "turbo run dev -F web",
     "dev:server": "turbo run dev -F server",
+    "start:all": "npm run db:start && npm run dev",
     "db:push": "turbo run db:push -F @default-full-app/db",
     "db:studio": "turbo run db:studio -F @default-full-app/db",
     "db:generate": "turbo run db:generate -F @default-full-app/db",
