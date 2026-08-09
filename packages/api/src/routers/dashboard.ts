@@ -1,13 +1,16 @@
 import { db } from "@default-full-app/db";
 import { session, user } from "@default-full-app/db/schema/auth";
 import { env } from "@default-full-app/env/server";
-import { count, desc, eq } from "drizzle-orm";
+import { count, desc, eq, isNull } from "drizzle-orm";
 
 import { protectedProcedure, router } from "../index";
 
 export const dashboardRouter = router({
   stats: protectedProcedure.query(async ({ ctx }) => {
-    const [usersCountRow] = await db.select({ value: count() }).from(user);
+    const [usersCountRow] = await db
+      .select({ value: count() })
+      .from(user)
+      .where(isNull(user.deletedAt));
 
     const lastLoginRows = await db
       .select({ createdAt: session.createdAt })
