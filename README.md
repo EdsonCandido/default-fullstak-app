@@ -18,33 +18,43 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 
 ## Getting Started
 
-First, install the dependencies:
+All configuration lives in a single root `.env` file. Apps, Drizzle, and Docker Compose load from it.
+
+1. Copy the example env and install dependencies:
 
 ```bash
+cp .env.example .env
 npm install
 ```
 
-## Database Setup
-
-This project uses PostgreSQL with Drizzle ORM.
-
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/server/.env` file with your PostgreSQL connection details.
-
-3. Apply the schema to your database:
+2. Start PostgreSQL, apply the schema, and run the full stack:
 
 ```bash
+npm run db:start
 npm run db:push
+npm run start:all
 ```
 
-Then, run the development server:
+`start:all` starts Postgres (if needed) and runs `npm run dev` for web + server.
 
-```bash
-npm run dev
-```
+Open [http://localhost:3001](http://localhost:3001) for the web app.  
+API: [http://localhost:3000](http://localhost:3000).
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+### Environment variables
+
+| Variable | Default | Description |
+|---|---|---|
+| `WEB_PORT` | `3001` | Host port for the web app (dev server / Compose publish) |
+| `SERVER_PORT` | `3000` | Port for the API server in local dev (Compose maps this host port to container `3000`) |
+| `POSTGRES_PORT` | `5432` | Host port for PostgreSQL |
+| `POSTGRES_PASSWORD` | `password` | PostgreSQL password |
+| `DATABASE_URL` | `postgresql://postgres:password@localhost:5432/default-full-app` | DB connection string (local host) |
+| `BETTER_AUTH_SECRET` | (placeholder) | Auth secret (≥ 32 chars) |
+| `BETTER_AUTH_URL` | `http://localhost:3000` | Better Auth base URL |
+| `CORS_ORIGIN` | `http://localhost:3001` | Allowed CORS origin (web URL) |
+| `VITE_SERVER_URL` | `http://localhost:3000` | Server URL used by the web client |
+
+If you change ports, also update `DATABASE_URL`, `BETTER_AUTH_URL`, `CORS_ORIGIN`, and `VITE_SERVER_URL` so they stay in sync.
 
 ## UI Customization
 
@@ -76,14 +86,14 @@ If you want to add app-specific blocks instead of shared primitives, run the sha
 
 ### Docker Compose
 
-- Target: web + server
+- Target: web + server + postgres
 - Config: `docker-compose.yml` (app Dockerfiles live in `apps/*/Dockerfile`)
-- Build images: npm run docker:build
-- Start: npm run docker:up
-- Logs: npm run docker:logs
-- Stop: npm run docker:down
+- Build images: `npm run docker:build`
+- Start full stack: `npm run docker:up`
+- Logs: `npm run docker:logs`
+- Stop: `npm run docker:down`
 
-Environment variables are read from each app's `.env` file (baked into web builds for public variables) and overridden in `docker-compose.yml` for container networking.
+Environment variables are read from the root `.env`. Host ports use `WEB_PORT`, `SERVER_PORT`, and `POSTGRES_PORT`. Inside the Compose network, services still use container ports `80` (web), `3000` (server), and `5432` (postgres).
 
 For more details, see the guide on [Deploying with Docker Compose](https://www.better-t-stack.dev/docs/guides/docker).
 
@@ -103,6 +113,7 @@ default-full-app/
 
 ## Available Scripts
 
+- `npm run start:all`: Start Postgres and all apps in development mode
 - `npm run dev`: Start all applications in development mode
 - `npm run build`: Build all applications
 - `npm run dev:web`: Start only the web application
@@ -112,6 +123,7 @@ default-full-app/
 - `npm run db:generate`: Generate database client/types
 - `npm run db:migrate`: Run database migrations
 - `npm run db:studio`: Open database studio UI
+- `npm run db:start`: Start only the Postgres container
 - `npm run docker:build`: Build the Docker Compose images
 - `npm run docker:up`: Build and start the Docker Compose stack
 - `npm run docker:logs`: Tail logs from the Docker Compose stack

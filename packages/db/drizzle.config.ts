@@ -1,8 +1,10 @@
 import dotenv from "dotenv";
 import { defineConfig } from "drizzle-kit";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 dotenv.config({
-  path: "../../apps/server/.env",
+  path: resolve(fileURLToPath(new URL(".", import.meta.url)), "../../.env"),
 });
 
 export default defineConfig({
