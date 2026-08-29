@@ -1,0 +1,31 @@
+services:
+  web:
+    ports: !reset []
+    networks:
+      default: {}
+      proxy:
+        aliases:
+          - web
+    build:
+      args:
+        VITE_SERVER_URL: https://${API_DOMAIN}
+
+  server:
+    ports: !reset []
+    networks:
+      default: {}
+      proxy:
+        aliases:
+          - server
+    environment:
+      NODE_ENV: production
+      BETTER_AUTH_URL: https://${API_DOMAIN}
+      CORS_ORIGIN: https://${WEB_DOMAIN}
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/default-full-app
+
+  postgres:
+    ports: !reset []
+
+networks:
+  proxy:
+    external: true

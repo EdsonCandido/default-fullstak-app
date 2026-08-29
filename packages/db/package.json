@@ -10,10 +10,12 @@
     }
   },
   "scripts": {
+    "build:migrate": "tsdown",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:studio": "drizzle-kit studio",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "db:migrate:run": "tsx src/migrate.ts"
   },
   "dependencies": {
     "@default-full-app/env": "*",
@@ -26,6 +28,8 @@
     "@default-full-app/config": "*",
     "@types/pg": "^8.20.0",
     "drizzle-kit": "^0.31.10",
+    "tsdown": "^0.22.14",
+    "tsx": "^4.23.1",
     "typescript": "^6.0.3"
   }
 }
