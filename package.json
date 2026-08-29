@@ -25,7 +25,13 @@
     "docker:build": "docker compose build",
     "docker:up": "docker compose up -d --build",
     "docker:down": "docker compose down",
-    "docker:logs": "docker compose logs -f"
+    "docker:logs": "docker compose logs -f",
+    "docker:prod:build": "docker compose -f docker-compose.yml -f docker-compose.prod.yml build",
+    "docker:prod:up": "docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build",
+    "docker:prod:down": "docker compose -f docker-compose.yml -f docker-compose.prod.yml down",
+    "docker:npm:up": "docker compose -f docker-compose.npm.yml up -d",
+    "docker:npm:down": "docker compose -f docker-compose.npm.yml down",
+    "docker:npm:logs": "docker compose -f docker-compose.npm.yml logs -f"
   },
   "dependencies": {
     "@default-full-app/env": "*",
